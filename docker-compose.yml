@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hris-laravel-app
+    container_name: hris-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./vendor:/var/www/vendor
+      - ./storage:/var/www/storage
+    depends_on:
+      - mysql
+    networks:
+      - hris-network
+    ports:
+      - "80:80"
+
+  mysql:
+    image: mysql:8.0
+    container_name: hris-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: hris_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - hris-network
+
+networks:
+  hris-network:
+    driver: bridge
